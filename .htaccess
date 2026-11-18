@@ -1,0 +1,82 @@
+AddDefaultCharset utf-8
+AddCharset utf-8 .css .js .svg .xml .txt .webmanifest
+AddType image/webp .webp
+AddType image/svg+xml .svg
+AddType font/woff2 .woff2
+AddType video/mp4 .mp4
+AddType text/javascript .js
+AddType application/manifest+json .webmanifest
+
+DirectoryIndex index.html
+ErrorDocument 404 /404.html
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+RewriteCond %{HTTP_HOST} ^bailarte\.ch$ [NC]
+RewriteRule ^ https://www.bailarte.ch%{REQUEST_URI} [R=301,L]
+
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+RewriteRule ^(?!\.well-known/)(?:.*/)?\. - [R=404,L]
+RewriteRule ^README\.md$ - [R=404,L]
+
+RewriteCond %{THE_REQUEST} \s/+(?:[^?\s]*/)?index\.html[?\s] [NC]
+RewriteRule ^((?:.*/)?)index\.html$ /$1 [R=301,L,NC]
+
+RewriteRule ^aktuelles/?$ /aktuelles.html [R=301,L,NC]
+RewriteRule ^kurse-workshops/?$ /kurse.html [R=301,L,NC]
+RewriteRule ^angebote/privatstunden/?$ /privatstunden.html [R=301,L,NC]
+RewriteRule ^angebote/?$ /kurse.html [R=301,L,NC]
+RewriteRule ^dj-animation/$ /dj-animation.html [R=301,L,NC]
+RewriteRule ^tanzreisen/$ /tanzreisen.html [R=301,L,NC]
+RewriteRule ^kuba-tanzreise-2019/$ /kuba-tanzreise-2019.html [R=301,L,NC]
+RewriteRule ^videos-fotos/$ /videos-fotos.html [R=301,L,NC]
+RewriteRule ^[^/]{1,4}ber-mich/?$ /ueber-mich.html [R=301,L,NC]
+RewriteRule ^ern[^/]{1,4}hrungsberatung/?$ /ernaehrungsberatung.html [R=301,L,NC]
+RewriteRule ^kontakt-team/team-bailarte-kuba/?$ /team-kuba.html [R=301,L,NC]
+RewriteRule ^kontakt-team/?$ /kontakt.html [R=301,L,NC]
+RewriteRule ^agb-s/?$ /agb.html [R=301,L,NC]
+RewriteRule ^wir-unterst[^/]{1,4}tzen/?$ /wir-unterstuetzen.html [R=301,L,NC]
+RewriteRule ^about/?$ /impressum.html [R=301,L,NC]
+RewriteRule ^j/privacy/?$ /datenschutz.html [R=301,L,NC]
+RewriteRule ^sitemap/?$ / [R=301,L,NC]
+RewriteRule ^login(?:/.*)?$ / [R=301,L,NC]
+RewriteRule ^app/download/ /videos-fotos.html [R=301,L,NC]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.+)$ /$1.html [R=301,L]
+
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteCond %{REQUEST_FILENAME}/index.html !-f
+RewriteRule ^ - [R=404,L]
+</IfModule>
+
+<IfModule mod_deflate.c>
+AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/xml text/xml image/svg+xml text/plain application/manifest+json
+</IfModule>
+
+<IfModule mod_headers.c>
+Header always set Strict-Transport-Security "max-age=31536000"
+Header always set X-Content-Type-Options "nosniff"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+Header always set X-Frame-Options "DENY" "expr=%{CONTENT_TYPE} =~ m#text/html#i"
+Header always set Cross-Origin-Opener-Policy "same-origin" "expr=%{CONTENT_TYPE} =~ m#text/html#i"
+Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; media-src 'self'; font-src 'self'; frame-src https://www.youtube-nocookie.com; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests" "expr=%{CONTENT_TYPE} =~ m#text/html#i"
+Header unset X-Powered-By
+
+<FilesMatch "\.(?:css|js|woff2)$">
+Header set Cache-Control "public, max-age=31536000, immutable"
+</FilesMatch>
+<FilesMatch "\.(?:webp|jpg|png|svg|ico|mp4)$">
+Header set Cache-Control "public, max-age=2592000"
+</FilesMatch>
+<FilesMatch "\.(?:html|xml|txt|webmanifest)$">
+Header set Cache-Control "no-cache"
+</FilesMatch>
+</IfModule>
